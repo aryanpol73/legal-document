@@ -22,28 +22,6 @@ Query ──► Query preprocessing (expansion, filter extraction)
       ──► Response + clickable citations (doc, page, section)
 ```
 
----
-
-## 👥 Team Split & Responsibilities
-
-### **Person A: Ingestion Pipeline ("How documents become searchable")**
-- `src/ingest.py`: PyMuPDF parsing, page numbers, header/footer cleanup
-- `src/chunker.py`: Heading detection, section-aware chunking
-- `src/store.py`: Embeddings, ChromaDB persistence, metadata management
-- *Later iterations*: OCR fallback for scanned PDFs, table extraction, version/effective_from tracking
-
-### **Person B: Query Pipeline ("How questions become cited answers")**
-- `src/retriever.py`: Dense search, BM25 keyword search, Reciprocal Rank Fusion (RRF), Cross-Encoder reranker
-- `src/answer.py`: Prompt synthesis, numbered sources, `[S1]` inline citations, abstention rules, citation verifier
-- `src/api.py`: FastAPI service endpoints
-- `app.py`: Streamlit interactive UI
-
-### **Together (Shared Ownership)**
-- `src/schemas.py`: The chunk metadata contract (strictly agreed upon before building)
-- `eval/gold_set.jsonl`: 50–100 ground-truth questions and evaluation harness
-
----
-
 ## 📁 Project Layout
 
 ```text
@@ -69,21 +47,7 @@ legal-doc/
 └── README.md
 ```
 
----
 
-## 🔄 Delivery Stages
-
-| Stage | Person A (Ingestion) | Person B (Query) |
-|---|---|---|
-| **1. Dense-only prototype** | Parse one PDF, split naively by size, store in Chroma | Query Chroma, build prompt, call LLM, print answer with `[S1]` markers |
-| **2. Real structure** | Structure-aware chunking (chapter/section/clause detection) | BM25 + Reciprocal Rank Fusion (RRF) |
-| **3. Harder documents** | Tables, OCR fallback, version metadata | Cross-encoder reranker, relevance floor for safe abstention |
-| **4. Trust** | Eval harness (Recall@k, MRR) | Citation verifier & FastAPI endpoints |
-| **5. Polish** | Streamlit UI (*ownership swapped*) | Ablations & results write-up (*ownership swapped*) |
-
----
-
-## 🌿 Git & Collaboration Workflow
 
 1. Protect `main`.
 2. Use feature branches (e.g., `feat/chunker-sections`, `feat/hybrid-retrieval`).
